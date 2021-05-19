@@ -22,7 +22,7 @@ while True:
 
     try:
         # Receives the request message from the client
-        MESSAGE =  CONNECTION.recv(1024)
+        MESSAGE =  CONNECTION.recv(4096)
         # Extract the path of the requested object from the message
         FILENAME = MESSAGE.split()[1]
         f = open(FILENAME[1:])
@@ -30,12 +30,12 @@ while True:
         RESPONSE = f.read()
         print("Requested file found. Sending response.")
         # Send the HTTP response header line to the connection socket
-        CONNECTION.send("HTTP/1.1 200 OK\r\n\r\n".encode('utf-8'))
+        CONNECTION.sendall("HTTP/1.1 200 OK\r\n\r\n".encode('utf-8'))
 
         # Send the content of the requested file to the connection socket
         for i in range(0, len(RESPONSE)):  
-            CONNECTION.send(RESPONSE[i].encode('utf-8'))
-        CONNECTION.send("\r\n".encode('utf-8'))
+            CONNECTION.sendall(RESPONSE[i].encode('utf-8'))
+        CONNECTION.sendall("\r\n".encode('utf-8'))
 
         # Close the client connection socket
         CONNECTION.close()
@@ -45,8 +45,8 @@ while True:
     except IOError:
         # Send HTTP response message for file not found
         print("ERROR 404: Requested file not found.")
-        CONNECTION.send("HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'))
-        CONNECTION.send("<html><head></head><body><h1> \
+        CONNECTION.sendall("HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'))
+        CONNECTION.sendall("<html><head></head><body><h1> \
         404 Not Found</h1></body></html>\r\n".encode('utf-8'))
         # Close the client connection socket
         CONNECTION.close()
