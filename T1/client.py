@@ -4,7 +4,8 @@ import socket
 import sys
 
 if len(sys.argv) !=3:
-    print("Error: wrong number of arguments. Requires 3: client.py <hostname> <filename>")
+    print("Error: wrong number of arguments. \
+        Requires 3: client.py <hostname> <filename>")
 
 PORT = 5923
 
@@ -19,7 +20,8 @@ try:
     SOCKET.connect((HOST, PORT))
     print("Connected.")
 except:
-    print("Couldn't establish connection with server. Try again in a moment.")
+    print("Couldn't establish connection with server. \
+        Try again in a moment.")
     SOCKET.close()
 
 # Send the HTTP request
@@ -28,7 +30,8 @@ try:
     SOCKET.send(REQUEST.encode())
     print("Request message sent.")
 except:
-    print("Couldn't send request. Try again in a moment.")
+    print("Couldn't send request. \
+        Try again in a moment.")
 
 # Recieve server HTTP response
 RESPONSE = ""
