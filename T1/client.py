@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import socket
+from socket import *
 import sys
 
 if len(sys.argv) !=3:
@@ -19,31 +19,30 @@ SOCKET = socket(AF_INET, SOCK_STREAM)
 try:
     SOCKET.connect((HOST, PORT))
     print("Connected.")
+
+    try:
+        # Send the HTTP request
+        REQUEST = "GET /" + FILENAME + " HTTP/1.1\r\n\r\n"
+        SOCKET.send(REQUEST.encode())
+        print("Request message sent.")
+
+        # Recieve server HTTP response
+        RESPONSE = ""
+        while True:
+            SOCKET.settimeout(5)
+            RESPONSE += SOCKET.recv(1024).decode()
+            if (len(SOCKET.recv(1024).decode()) == 0):
+                break
+
+        print("Server HTTP Response:\r\n\n" + RESPONSE)
+
+        # Close connection to server
+        print("Closing connection. Bye!")
+        SOCKET.close()
+
+    except:
+        print("Couldn't send request.")
+
 except:
-    print("Couldn't establish connection with server. \
-        Try again in a moment.")
+    print("Couldn't establish connection with server.")
     SOCKET.close()
-
-# Send the HTTP request
-REQUEST = "GET /" + filename + " HTTP/1.1\r\n\r\n"
-try: 
-    SOCKET.send(REQUEST.encode())
-    print("Request message sent.")
-except:
-    print("Couldn't send request. \
-        Try again in a moment.")
-
-# Recieve server HTTP response
-RESPONSE = ""
-while True:
-    SOCKET.settimeout(5)
-    RESPONSE += SOCKET.recv(1024).decode()
-    if (len(SOCKET.recv(1024).decode()) == 0):
-        break
-
-print("Server HTTP Response:\r\n\n" + RESPONSE)
-
-# Close connection to server
-print("Closing connection. Bye!")
-SOCKET.close()
-

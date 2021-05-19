@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import socket 
+from socket import *
 
 # Assign port value
 PORT = 5923
@@ -17,36 +17,39 @@ SOCKET.listen(1)
 print("Ready to serve . . .")
 
 while True:
-    connectionSocket, addr = SOCKET.accept()
+    CONNECTION, addr = SOCKET.accept()
     print("Request accepted from (address, port): %s" % (addr,))
 
     try:
         # Receives the request message from the client
-        message =  connectionSocket.recv(1024)
+        MESSAGE =  CONNECTION.recv(1024)
         # Extract the path of the requested object from the message
-        filename = message.split()[1]
-        f = open(filename[1:])
+        FILENAME = MESSAGE.split()[1]
+        f = open(FILENAME[1:])
         # Store the entire content of the requested file
-        outputdata = f.read()
+        RESPONSE = f.read()
         print("Requested file found. Sending response.")
         # Send the HTTP response header line to the connection socket
-        connectionSocket.send("HTTP/1.1 200 OK\r\n\r\n")
+        CONNECTION.send("HTTP/1.1 200 OK\r\n\r\n".encode('utf-8'))
 
         # Send the content of the requested file to the connection socket
-        for i in range(0, len(outputdata)):  
-            connectionSocket.send(outputdata[i])
-        connectionSocket.send("\r\n")
+        for i in range(0, len(RESPONSE)):  
+            CONNECTION.send(RESPONSE[i].encode('utf-8'))
+        CONNECTION.send("\r\n".encode('utf-8'))
 
         # Close the client connection socket
-        connectionSocket.close()
+        CONNECTION.close()
+        SOCKET.close()
+        break
 
     except IOError:
         # Send HTTP response message for file not found
         print("ERROR 404: Requested file not found.")
-        connectionSocket.send("HTTP/1.1 404 Not Found\r\n\r\n")
-        connectionSocket.send("<html><head></head><body><h1> \
-        404 Not Found</h1></body></html>\r\n")
+        CONNECTION.send("HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'))
+        CONNECTION.send("<html><head></head><body><h1> \
+        404 Not Found</h1></body></html>\r\n".encode('utf-8'))
         # Close the client connection socket
-        connectionSocket.close()
+        CONNECTION.close()
+        SOCKET.close()
+        break
 
-    SOCKET.close()
